@@ -1,0 +1,24 @@
+.video-player {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.play-pause {
+  margin-right: 10px;
+}
+
+.progress {
+  flex-grow: 1;
+  height: 10px;
+}
+
+.progress-bar {
+  height: 100%;
+  background-color: #f00;
+}
