@@ -1,5 +1,5 @@
-<div class="video-player">
-  <video #videoPlayerRef controls>
+<!-- <div class="video-player">
+  <video #videoPlayerRef controls (timeupdate)="updateProgress()">
     <source src="https://media.vimejs.com/720p.mp4" type="video/mp4" />
   </video>
   <div class="controls">
@@ -11,6 +11,54 @@
         class="progress-bar"
         [style.width.%]="(currentTime / duration) * 100"
       ></div>
+      <div
+        *ngIf="cutMark"
+        class="cut-mark"
+        [style.left.%]="(cutMark / duration) * 100"
+      ></div>
+      <div
+        *ngIf="cutMarkEnd"
+        class="cut-mark"
+        [style.left.%]="(cutMarkEnd / duration) * 100"
+      ></div>
     </div>
+    <button (click)="setCutMark()" class="trim-button">Set Cut Mark</button>
+    <button (click)="trimVideo()" class="trim-button">Trim Video</button>
+  </div>
+</div> -->
+<div class="video-player">
+  <video #videoPlayerRef controls (timeupdate)="updateProgress()">
+    <source src="https://media.vimejs.com/720p.mp4" type="video/mp4" />
+  </video>
+  <div class="controls">
+    <button (click)="togglePlayPause()" class="play-pause">
+      {{ isPlaying ? "Pause" : "Play" }}
+    </button>
+    <div class="progress">
+      <div
+        class="progress-bar"
+        [style.width.%]="(currentTime / duration) * 100"
+      ></div>
+      <div
+        *ngIf="cutMarkStart"
+        class="cut-mark"
+        [style.left.%]="(cutMarkStart / duration) * 100"
+      ></div>
+      <div
+        *ngIf="cutMarkEnd"
+        class="cut-mark"
+        [style.left.%]="(cutMarkEnd / duration) * 100"
+      ></div>
+    </div>
+    <button (click)="setCutMark()" class="trim-button">
+      {{ !cutMarkStart ? "Set Start Cut" : "Set End Cut" }}
+    </button>
+    <button
+      (click)="trimVideo()"
+      class="trim-button"
+      [disabled]="!cutMarkStart || !cutMarkEnd"
+    >
+      Trim Video
+    </button>
   </div>
 </div>
