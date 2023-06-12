@@ -1,32 +1,3 @@
-<!-- <div class="video-player">
-  <video #videoPlayerRef controls (timeupdate)="updateProgress()">
-    <source src="https://media.vimejs.com/720p.mp4" type="video/mp4" />
-  </video>
-  <div class="controls">
-    <button (click)="togglePlayPause()" class="play-pause">
-      {{ isPlaying ? "Pause" : "Play" }}
-    </button>
-    <div class="progress">
-      <div
-        class="progress-bar"
-        [style.width.%]="(currentTime / duration) * 100"
-      ></div>
-      <div
-        *ngIf="cutMark"
-        class="cut-mark"
-        [style.left.%]="(cutMark / duration) * 100"
-      ></div>
-      <div
-        *ngIf="cutMarkEnd"
-        class="cut-mark"
-        [style.left.%]="(cutMarkEnd / duration) * 100"
-      ></div>
-    </div>
-    <button (click)="setCutMark()" class="trim-button">Set Cut Mark</button>
-    <button (click)="trimVideo()" class="trim-button">Trim Video</button>
-  </div>
-</div> -->
-
 <div class="video-player">
   <video
     #videoPlayerRef
@@ -41,26 +12,21 @@
       {{ isPlaying ? "Pause" : "Play" }}
     </button>
     <div class="progress">
+      <div class="progress-bar"></div>
       <div
-        class="progress-bar"
-        [class.trimmed]="isShowingTrimmedPart"
-        [style.width.%]="(currentTime / duration) * 100"
+        *ngFor="let trim of trims"
+        class="trimmed-progress"
+        [style.left.%]="(trim.start / duration) * 100"
+        [style.width.%]="((trim.end - trim.start) / duration) * 100"
       ></div>
       <div
-        *ngFor="let start of trimStart; index as i"
-        class="cut-mark"
-        [style.left.%]="(start / duration) * 100"
+        *ngIf="isTrimming"
+        class="trim-mark"
+        [style.left.%]="(trimStart / duration) * 100"
       ></div>
     </div>
-    <button (click)="setCutMark()" class="trim-button">
-      {{ !isTrimming ? "Set Cut Mark" : "Set End Cut" }}
-    </button>
-    <button
-      (click)="trimVideo()"
-      class="trim-button"
-      [disabled]="trimStart.length === 0 || trimEnd.length === 0"
-    >
-      {{ isTrimming ? "Trim Video" : "Play Trim" }}
+    <button (click)="setTrim()" class="trim-button">
+      {{ isTrimming ? "End Trim" : "Start Trim" }}
     </button>
   </div>
 </div>

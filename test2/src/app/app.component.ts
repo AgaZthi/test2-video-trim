@@ -1,5 +1,10 @@
 import { Component, ViewChild } from '@angular/core';
 
+interface Trim {
+  start: number;
+  end: number;
+}
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -11,10 +16,9 @@ export class AppComponent {
   isPlaying: boolean = false;
   currentTime: number = 0;
   duration: number = 0;
-  trimStart: number[] = [];
-  trimEnd: number[] = [];
+  trimStart: number = 0;
+  trims: Trim[] = [];
   isTrimming: boolean = false;
-  isShowingTrimmedPart: boolean = false;
 
   togglePlayPause() {
     const videoPlayer = this.videoPlayerRef.nativeElement;
@@ -28,67 +32,46 @@ export class AppComponent {
   }
 
   updateProgress() {
-    const videoPlayer = this.videoPlayerRef.nativeElement;
-    this.currentTime = videoPlayer.currentTime;
-    this.duration = videoPlayer.duration;
+    const videoPlayer = this.videoPlayerRef?.nativeElement;
+    if (videoPlayer) {
+      this.currentTime = videoPlayer.currentTime;
+      this.duration = videoPlayer.duration;
 
-    if (
-      !this.isTrimming &&
-      this.isShowingTrimmedPart &&
-      this.trimStart.length > 0 &&
-      this.trimEnd.length > 0
-    ) {
-      let isInTrimmedPart = false;
-      for (let i = 0; i < this.trimStart.length; i++) {
-        if (
-          this.currentTime >= this.trimStart[i] &&
-          this.currentTime <= this.trimEnd[i]
-        ) {
-          isInTrimmedPart = true;
-          break;
-        }
+      const progressBar: HTMLElement | null =
+        document.querySelector('.progress-bar');
+      if (progressBar) {
+        progressBar.style.width = `${
+          (this.currentTime / this.duration) * 100
+        }%`;
       }
-      if (!isInTrimmedPart) {
-        videoPlayer.currentTime = this.trimStart[0];
-      }
-    }
-    const progressBar = document.querySelector('.progress-bar');
-    if (progressBar) {
-      progressBar.classList.remove('trimmed');
 
-      for (let i = 0; i < this.trimStart.length; i++) {
-        if (
-          this.currentTime >= this.trimStart[i] &&
-          this.currentTime <= this.trimEnd[i]
-        ) {
-          progressBar.classList.add('trimmed');
-          break;
-        }
+      const trimmedProgress: HTMLElement | null =
+        document.querySelector('.trimmed-progress');
+      if (trimmedProgress && this.trims.length > 0) {
+        const firstTrim = this.trims[0];
+        trimmedProgress.style.width = `${
+          ((this.currentTime - firstTrim.start) / this.duration) * 100
+        }%`;
+      }
+
+      if (
+        this.trims.length > 0 &&
+        this.currentTime >= this.trims[this.trims.length - 1].end
+      ) {
+        videoPlayer.currentTime = this.trims[this.trims.length - 1].end;
       }
     }
   }
-  setCutMark() {
-    const videoPlayer = this.videoPlayerRef.nativeElement;
+
+  setTrim() {
     if (this.isTrimming) {
-      this.trimEnd.push(videoPlayer.currentTime);
-      this.isTrimming = false;
-    } else {
-      this.trimStart.push(videoPlayer.currentTime);
-      this.isTrimming = true;
-    }
-  }
-  trimVideo() {
-    if (this.trimStart.length > 0 && this.trimEnd.length > 0) {
       const videoPlayer = this.videoPlayerRef.nativeElement;
-      // Implement logic to trim the video using the trimStart and trimEnd values
-      console.log('Video trimmed from', this.trimStart, 'to', this.trimEnd);
-      this.isPlaying = true;
+      const trimEnd = videoPlayer.currentTime;
+      this.trims.push({ start: this.trimStart!, end: trimEnd });
       this.isTrimming = false;
-      this.isShowingTrimmedPart = true;
-      videoPlayer.currentTime = this.trimStart[0];
-      videoPlayer.play();
     } else {
-      console.log('Please set both start and end cut marks before trimming.');
+      this.trimStart = this.videoPlayerRef.nativeElement.currentTime;
+      this.isTrimming = true;
     }
   }
 }
