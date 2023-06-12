@@ -26,6 +26,7 @@
     <button (click)="trimVideo()" class="trim-button">Trim Video</button>
   </div>
 </div> -->
+
 <div class="video-player">
   <video
     #videoPlayerRef
@@ -42,17 +43,13 @@
     <div class="progress">
       <div
         class="progress-bar"
+        [class.trimmed]="isShowingTrimmedPart"
         [style.width.%]="(currentTime / duration) * 100"
       ></div>
       <div
-        *ngIf="trimStart"
+        *ngFor="let start of trimStart; index as i"
         class="cut-mark"
-        [style.left.%]="(trimStart / duration) * 100"
-      ></div>
-      <div
-        *ngIf="trimEnd"
-        class="cut-mark"
-        [style.left.%]="(trimEnd / duration) * 100"
+        [style.left.%]="(start / duration) * 100"
       ></div>
     </div>
     <button (click)="setCutMark()" class="trim-button">
@@ -61,7 +58,7 @@
     <button
       (click)="trimVideo()"
       class="trim-button"
-      [disabled]="!trimStart || !trimEnd"
+      [disabled]="trimStart.length === 0 || trimEnd.length === 0"
     >
       {{ isTrimming ? "Trim Video" : "Play Trim" }}
     </button>

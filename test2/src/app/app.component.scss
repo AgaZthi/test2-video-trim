@@ -17,17 +17,25 @@
   position: relative;
   flex-grow: 1;
   height: 10px;
+
+  .progress-bar {
+    height: 100%;
+    background-color: #f00;
+
+    &.trimmed {
+      background-color: blue;
+    }
+  }
+
+  .cut-mark {
+    position: absolute;
+    top: 0;
+    width: 2px;
+    height: 100%;
+    background-color: #000;
+  }
 }
 
-.progress-bar {
-  height: 100%;
-  background-color: #f00;
-}
-
-.cut-mark {
-  position: absolute;
-  top: 0;
-  width: 2px;
-  height: 100%;
-  background-color: #000;
+.trim-button {
+  margin-left: 10px;
 }
