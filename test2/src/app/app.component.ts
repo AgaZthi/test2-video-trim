@@ -11,8 +11,10 @@ export class AppComponent {
   isPlaying: boolean = false;
   currentTime: number = 0;
   duration: number = 0;
-  cutMarkStart: number | null = null;
-  cutMarkEnd: number | null = null;
+  trimStart: number | null = null;
+  trimEnd: number | null = null;
+  isTrimming: boolean = false;
+  isShowingTrimmedPart: boolean = false;
 
   togglePlayPause() {
     const videoPlayer = this.videoPlayerRef.nativeElement;
@@ -24,41 +26,48 @@ export class AppComponent {
       videoPlayer.pause();
     }
   }
+
   updateProgress() {
     const videoPlayer = this.videoPlayerRef.nativeElement;
     this.currentTime = videoPlayer.currentTime;
     this.duration = videoPlayer.duration;
 
-    if (this.cutMarkStart !== null && this.cutMarkEnd !== null) {
+    if (
+      !this.isTrimming &&
+      this.isShowingTrimmedPart &&
+      this.trimStart !== null &&
+      this.trimEnd !== null
+    ) {
       if (
-        this.currentTime < this.cutMarkStart ||
-        this.currentTime > this.cutMarkEnd
+        this.currentTime < this.trimStart ||
+        this.currentTime > this.trimEnd
       ) {
-        videoPlayer.currentTime = this.cutMarkStart;
+        videoPlayer.currentTime = this.trimStart;
       }
     }
   }
 
   setCutMark() {
     const videoPlayer = this.videoPlayerRef.nativeElement;
-    if (this.cutMarkStart === null) {
-      this.cutMarkStart = videoPlayer.currentTime;
-    } else if (this.cutMarkEnd === null) {
-      this.cutMarkEnd = videoPlayer.currentTime;
+    if (this.isTrimming) {
+      this.trimEnd = videoPlayer.currentTime;
+      this.isTrimming = false;
+    } else {
+      this.trimStart = videoPlayer.currentTime;
+      this.isTrimming = true;
     }
   }
 
   trimVideo() {
-    if (this.cutMarkStart !== null && this.cutMarkEnd !== null) {
-      // Implement logic to trim the video using the cutMarkStart and cutMarkEnd values
-      console.log(
-        'Video trimmed from',
-        this.cutMarkStart,
-        'to',
-        this.cutMarkEnd
-      );
-      this.cutMarkStart = null;
-      this.cutMarkEnd = null;
+    if (this.trimStart !== null && this.trimEnd !== null) {
+      const videoPlayer = this.videoPlayerRef.nativeElement;
+      // Implement logic to trim the video using the trimStart and trimEnd values
+      console.log('Video trimmed from', this.trimStart, 'to', this.trimEnd);
+      this.isPlaying = true;
+      this.isTrimming = false;
+      this.isShowingTrimmedPart = true;
+      videoPlayer.currentTime = this.trimStart;
+      videoPlayer.play();
     } else {
       console.log('Please set both start and end cut marks before trimming.');
     }

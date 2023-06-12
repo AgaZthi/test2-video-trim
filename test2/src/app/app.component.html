@@ -27,7 +27,12 @@
   </div>
 </div> -->
 <div class="video-player">
-  <video #videoPlayerRef controls (timeupdate)="updateProgress()">
+  <video
+    #videoPlayerRef
+    controls
+    (timeupdate)="updateProgress()"
+    [currentTime]="isTrimming ? trimStart : null"
+  >
     <source src="https://media.vimejs.com/720p.mp4" type="video/mp4" />
   </video>
   <div class="controls">
@@ -40,25 +45,25 @@
         [style.width.%]="(currentTime / duration) * 100"
       ></div>
       <div
-        *ngIf="cutMarkStart"
+        *ngIf="trimStart"
         class="cut-mark"
-        [style.left.%]="(cutMarkStart / duration) * 100"
+        [style.left.%]="(trimStart / duration) * 100"
       ></div>
       <div
-        *ngIf="cutMarkEnd"
+        *ngIf="trimEnd"
         class="cut-mark"
-        [style.left.%]="(cutMarkEnd / duration) * 100"
+        [style.left.%]="(trimEnd / duration) * 100"
       ></div>
     </div>
     <button (click)="setCutMark()" class="trim-button">
-      {{ !cutMarkStart ? "Set Start Cut" : "Set End Cut" }}
+      {{ !isTrimming ? "Set Cut Mark" : "Set End Cut" }}
     </button>
     <button
       (click)="trimVideo()"
       class="trim-button"
-      [disabled]="!cutMarkStart || !cutMarkEnd"
+      [disabled]="!trimStart || !trimEnd"
     >
-      Trim Video
+      {{ isTrimming ? "Trim Video" : "Play Trim" }}
     </button>
   </div>
 </div>
