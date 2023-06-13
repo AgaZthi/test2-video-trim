@@ -74,4 +74,23 @@ export class AppComponent {
       this.isTrimming = true;
     }
   }
+
+  seekTo(event: MouseEvent) {
+    const progressBar = event.target as HTMLElement;
+    const progressBarRect = progressBar.getBoundingClientRect();
+    const clickX = event.clientX - progressBarRect.left;
+    const progressBarWidth = progressBar.clientWidth;
+    const seekTime = (clickX / progressBarWidth) * this.duration;
+
+    const videoPlayer = this.videoPlayerRef.nativeElement;
+
+    // Check if the clicked position is less than the current time
+    if (seekTime < videoPlayer.currentTime) {
+      // Navigate to the previous position
+      videoPlayer.currentTime = seekTime;
+    } else {
+      // Seek to the clicked position
+      videoPlayer.currentTime = seekTime;
+    }
+  }
 }
